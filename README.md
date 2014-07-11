@@ -61,6 +61,26 @@ type Animal struct { // animals
 }
 ```
 
+If your column names differ from the struct fields, you can specify them like
+this:
+
+```go
+type Animal struct { // animals
+    AnimalId     int64     `column:"beast_id" primaryKey:"yes"`
+    Birthday     time.Time `column:"day_of_the_beast"`
+    Age          int64     `column:"age_of_the_beast"`
+}
+```
+
+Note that if you have custom column name, you will still have to specify
+`primaryKey`, even if your struct field is named `Id`:
+
+```go
+type Foo struct { // animals
+    Id int64 `column:"foo_id" primaryKey:"yes"`
+}
+```
+
 # Getting Started
 
 ```go

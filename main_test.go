@@ -146,6 +146,12 @@ type Animal struct {
 	UpdatedAt time.Time
 }
 
+type MappedFields struct {
+	Id   int64     `column:"mapped_id" primaryKey:"yes"`
+	Name string    `column:"mapped_name"`
+	Date time.Time `column:"mapped_time"`
+}
+
 type Details struct {
 	Id   int64
 	Bulk gorm.Hstore
@@ -196,6 +202,7 @@ func init() {
 	db.Exec("drop table companies")
 	db.Exec("drop table animals")
 	db.Exec("drop table user_companies")
+	db.Exec("drop table mapped_fields")
 
 	if err = db.CreateTable(&Animal{}).Error; err != nil {
 		panic(fmt.Sprintf("No error should happen when create table, but got %+v", err))
@@ -210,6 +217,10 @@ func init() {
 	}
 
 	if err = db.CreateTable(Email{}).Error; err != nil {
+		panic(fmt.Sprintf("No error should happen when create table, but got %+v", err))
+	}
+
+	if err = db.CreateTable(MappedFields{}).Error; err != nil {
 		panic(fmt.Sprintf("No error should happen when create table, but got %+v", err))
 	}
 
@@ -249,6 +260,18 @@ func init() {
 	db.Save(&Animal{Name: "Amazing", From: "nerdz"})
 	db.Save(&Animal{Name: "Horse", From: "gorm"})
 	db.Save(&Animal{Name: "Last", From: "epic"})
+}
+
+func TestMappedFields(t *testing.T) {
+	col := "mapped_name"
+	scope := db.NewScope(&MappedFields{})
+	if !scope.Dialect().HasColumn(scope, "mapped_fields", col) {
+		t.Errorf("MappedFields should have column %s", col)
+	}
+	col = "mapped_id"
+	if scope.PrimaryKey() != col {
+		t.Errorf("MappedFields should have primary key %s, but got %q", col, scope.PrimaryKey())
+	}
 }
 
 func TestFirstAndLast(t *testing.T) {

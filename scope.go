@@ -260,7 +260,13 @@ func (scope *Scope) Fields() []*Field {
 
 		var field Field
 		field.Name = fieldStruct.Name
-		field.DBName = toSnake(fieldStruct.Name)
+		colName := fieldStruct.Tag.Get("column")
+
+		if colName != "" {
+			field.DBName = colName
+		} else {
+			field.DBName = toSnake(fieldStruct.Name)
+		}
 
 		value := indirectValue.FieldByName(fieldStruct.Name)
 		field.Value = value.Interface()

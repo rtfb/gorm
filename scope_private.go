@@ -489,7 +489,12 @@ func (scope *Scope) getPrimaryKey() string {
 
 		// if primaryKey tag found, return column name
 		if fieldStruct.Tag.Get("primaryKey") != "" {
-			return toSnake(fieldStruct.Name)
+			colName := fieldStruct.Tag.Get("column")
+			if colName != "" {
+				return colName
+			} else {
+				return toSnake(fieldStruct.Name)
+			}
 		}
 	}
 
